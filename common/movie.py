@@ -1,14 +1,17 @@
+import enum
+
 from datetime import time
-
 from dataclasses import dataclass
+from common import Cinema
 
-from domain.Cinema import Cinema
-from domain.MovieStatus import MovieStatus
+
+class MovieStatus(enum.Enum):
+    COMING_SOON = 1
+    PLAYING = 2
 
 
 @dataclass()
 class Movie:
-    _id: str
     name: str
     status: MovieStatus
     duration: time

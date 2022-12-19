@@ -1,23 +1,22 @@
 import json
 import logging
-import uuid
 
 import datetime as dt
 from airflow.dag.dag_config import Config
-from airflow.modules.cineplex import CineplexScraper
+from airflow.modules.cineplex.cineplex_producer import CineplexProducer
+from airflow.modules.cineplex.cineplex_scraper import CineplexScraper
+
 from airflow.tool.redis_client import RedisClient
-from domain.Cinema import Cinema
-from domain.Movie import Movie
-from domain.MovieStatus import MovieStatus
+from common import KafkaTopic, Cinema, Movie, MovieStatus
 
 
 class CineplexExecutor:
     _total_movie_key = 'CINEPLEX_TOTAL_MOVIE'
 
-    def __init__(self, max_workers, redis_key, redis_config):
-        self.max_workers = max_workers
+    def __init__(self, redis_key, redis_config):
         self.redis_client = RedisClient(redis_key, redis_config)
         self.scraper = CineplexScraper(Config.CINEMA_API[Cinema.CINEPLEX])
+        self.producer = CineplexProducer(Config.KAFKA_SERVERS)
 
     # TODO: retry
     def execute(self):
@@ -27,7 +26,9 @@ class CineplexExecutor:
         response_json = json.loads(response)
 
         self.redis_update_total_movie(response_json['totalCount'])
-        self.to_movies(response_json)
+
+        for movie in self.to_movies(response_json):
+            self.producer.publish(KafkaTopic.movie, movie)
 
     # get total movie count from redis
     # if it is empty, pull it from API and store it
@@ -50,28 +51,37 @@ class CineplexExecutor:
     def redis_update_total_movie(self, count: int):
         return self.redis_client.set(self._total_movie_key, count)
 
+    # convert into movie and movie status and publish them
     def to_movies(self, json_string):
         for movie in json_string['data']:
             yield self.to_movie(movie)
 
     def to_movie(self, entry):
         return Movie(
-            str(uuid.uuid4()),
-            entry.name,
-            self.movie_status(entry.isComingSoon, entry.isNowPlaying),
-            self.duration(entry.duration),
-            entry.mpaaRating.ratingTitle,
+            entry['name'],
+            self.movie_status(entry['isComingSoon'], entry['isNowPlaying']),
+            self.duration(entry['duration']),
+            self.rating(entry['mpaaRating']['ratingTitle']),
             Cinema.CINEPLEX,
-            entry.largePosterImageUrl
-         )
+            entry['mediumPosterImageUrl']
+        )
 
-    def movie_status(self, isComingSoon: bool, isNowPlaying: bool):
-        if isComingSoon:
+    @staticmethod
+    def rating(rating):
+        if rating is 'N/A' or rating is 'null':
+            return None
+        else:
+            return rating
+
+    @staticmethod
+    def movie_status(is_coming_soon: bool, is_now_playing: bool):
+        if is_coming_soon:
             return MovieStatus.COMING_SOON
-        elif isNowPlaying:
+        elif is_now_playing:
             return MovieStatus.PLAYING
         else:
-            return MovieStatus.ENDED
+            return None
 
-    def duration(self, str):
-        return dt.datetime.strptime(str, '%Hh %Mm').time()
+    @staticmethod
+    def duration(s):
+        return dt.datetime.strptime(s, '%Hh %Mm').time()

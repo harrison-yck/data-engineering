@@ -4,7 +4,9 @@
 
 ## Introduction
 
-This project aims to create a simple data pipeline with Python, AirFlow, Kafka Connect, ElasticSearch and mongoDB to allow user search films from different cinemas 
+This project aims to create a data pipeline with Python, AirFlow, Kafka Connect, ElasticSearch and mongoDB,
+which allows users to search movies and subscribe for updates
+
 
 ## API:
 
@@ -13,6 +15,8 @@ This project aims to create a simple data pipeline with Python, AirFlow, Kafka C
 ## Design
 
 ## Architecture ##
+
+![](graph/arch.png)
 
 ## How To Use
 

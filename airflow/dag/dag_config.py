@@ -1,4 +1,4 @@
-from domain.Cinema import Cinema
+from common import Cinema
 
 
 class Config:

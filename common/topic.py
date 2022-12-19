@@ -1,0 +1,2 @@
+class KafkaTopic:
+    movie = "MOVIE"
