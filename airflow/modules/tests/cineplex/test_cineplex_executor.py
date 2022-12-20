@@ -2,7 +2,7 @@ import datetime as dt
 
 from airflow.modules.cineplex.cineplex_executor import CineplexExecutor
 from common import Movie, MovieStatus, Cinema
-from ..fixtures import cineplex_api_response, redis_config
+from ..fixtures import cineplex_api_response
 
 
 def test_duration():
@@ -11,8 +11,8 @@ def test_duration():
     assert result == expected
 
 
-def test_to_movies(redis_config, cineplex_api_response):
-    executor = CineplexExecutor("test", redis_config)
+def test_to_movies(cineplex_api_response):
+    executor = CineplexExecutor("test")
     result = list(executor.to_movies(cineplex_api_response))[0]
 
     expected = Movie(
