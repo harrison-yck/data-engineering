@@ -12,4 +12,7 @@ class CineplexProducer:
         )
 
     def publish(self, topic, movie: Movie):
-        pass
+        self._producer.send(
+            topic,
+            value=movie
+        )

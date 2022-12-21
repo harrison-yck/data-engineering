@@ -13,13 +13,12 @@ class CineplexExecutor:
         self.scraper = CineplexScraper(Config.CINEMA_API[Cinema.CINEPLEX])
         self.producer = CineplexProducer(Config.KAFKA_SERVERS)
 
-    # TODO: retry
     def execute(self):
         response = self.scraper.get_text(0, 500)
         response_json = json.loads(response)
 
         for movie in self.to_movies(response_json):
-            self.producer.publish(KafkaTopic.movie, movie)
+            self.producer.publish(KafkaTopic.movie_update, movie)
 
     # convert into movie and movie status and publish them
     def to_movies(self, json_string):

@@ -1,2 +1,2 @@
 class KafkaTopic:
-    movie = "MOVIE"
+    movie_update = "MOVIE_UPDATE"

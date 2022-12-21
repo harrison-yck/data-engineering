@@ -2,6 +2,8 @@ import logging
 from contextlib import closing
 from requests import get
 
+from airflow.tool import Retry
+
 
 class CineplexScraper:
     def __init__(self, url):
@@ -9,6 +11,7 @@ class CineplexScraper:
         logging.log(logging.INFO, 'Cineplex Scraper init with url: ', url)
         self.url = url
 
+    @Retry(3)
     def get_text(self, skip: 0, size: 100):
         try:
             payload = self.get_payload(skip, size)

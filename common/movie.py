@@ -10,7 +10,7 @@ class MovieStatus(enum.Enum):
     PLAYING = 2
 
 
-@dataclass()
+@dataclass(frozen=True)
 class Movie:
     name: str
     status: MovieStatus

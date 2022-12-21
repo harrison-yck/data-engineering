@@ -1,1 +1,1 @@
-from airflow.tool import redis_client
+from airflow.tool.retry import Retry
