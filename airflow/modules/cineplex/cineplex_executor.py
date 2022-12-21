@@ -20,7 +20,6 @@ class CineplexExecutor:
         for movie in self.to_movies(response_json):
             self.producer.publish(KafkaTopic.movie_update, movie)
 
-    # convert into movie and movie status and publish them
     def to_movies(self, json_string):
         for movie in json_string['data']:
             yield self.to_movie(movie)
@@ -30,14 +29,19 @@ class CineplexExecutor:
             entry['name'],
             self.movie_status(entry['isComingSoon'], entry['isNowPlaying']),
             self.duration(entry['duration']),
-            self.rating(entry['mpaaRating']['ratingTitle']),
+            self.rating(entry['mpaaRating']),
             Cinema.CINEPLEX,
-            entry['largePosterImageUrl']
+            entry['mediumPosterImageUrl']
         )
 
     @staticmethod
-    def rating(rating):
-        if rating is 'N/A' or rating is 'null':
+    def rating(movie_rating):
+        if movie_rating is None:
+            return None
+
+        rating = movie_rating['ratingTitle']
+
+        if rating is 'N/A':
             return None
         else:
             return rating
@@ -49,8 +53,11 @@ class CineplexExecutor:
         elif is_now_playing:
             return MovieStatus.PLAYING
         else:
-            return None
+            return MovieStatus.NA
 
     @staticmethod
     def duration(s):
+        if s is "":
+            return None
+
         return dt.datetime.strptime(s, '%Hh %Mm').time()

@@ -1,8 +1,9 @@
 import datetime as dt
+from unittest.mock import patch
 
 from airflow.modules.cineplex.cineplex_executor import CineplexExecutor
+from airflow.modules.tests.test_tool import read_file_as_json
 from common import Movie, MovieStatus, Cinema
-from ..fixtures import cineplex_api_response
 
 
 def test_duration():
@@ -11,9 +12,10 @@ def test_duration():
     assert result == expected
 
 
-def test_to_movies(cineplex_api_response):
-    executor = CineplexExecutor("test")
-    result = list(executor.to_movies(cineplex_api_response))[0]
+@patch("airflow.modules.cineplex.cineplex_executor.CineplexProducer")
+def test_to_movies(self):
+    executor = CineplexExecutor()
+    result = list(executor.to_movies(read_file_as_json("test_data/cineplex_api.txt")))
 
     expected = Movie(
         'Avatar: The Way of Water',
@@ -24,4 +26,4 @@ def test_to_movies(cineplex_api_response):
         'https://mediafiles.cineplex.com/Central/Film/Posters/27407_320_470.jpg'
     )
 
-    assert result == expected
+    assert result[0] == expected
