@@ -21,7 +21,9 @@ which allows users to search movies and subscribe for updates.
 
 ## How To Use
 
-## TODO
+## Ref
+
+Kafka: https://hub.docker.com/r/bitnami/kafka
 
 ## Author
 - [@harrison](https://github.com/harrison-yck)
