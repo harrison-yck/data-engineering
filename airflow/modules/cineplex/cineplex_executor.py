@@ -1,6 +1,8 @@
 import json
 
 import datetime as dt
+import uuid
+
 from airflow.dag.dag_config import Config
 from airflow.modules.cineplex.cineplex_producer import CineplexProducer
 from airflow.modules.cineplex.cineplex_scraper import CineplexScraper
@@ -26,6 +28,7 @@ class CineplexExecutor:
 
     def to_movie(self, entry):
         return Movie(
+            str(uuid.uuid4()),
             entry['name'],
             self.movie_status(entry['isComingSoon'], entry['isNowPlaying']),
             self.duration(entry['duration']),

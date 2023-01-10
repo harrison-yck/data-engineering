@@ -13,8 +13,8 @@
     "value.converter.schemas.enable": false,
     "transforms":"InsertKey,ExtractKey",
     "transforms.InsertKey.type":"org.apache.kafka.connect.transforms.ValueToKey",
-    "transforms.InsertKey.fields":"name",
+    "transforms.InsertKey.fields":"id",
     "transforms.ExtractKey.type":"org.apache.kafka.connect.transforms.ExtractField$Key",
-    "transforms.ExtractKey.field":"name"
+    "transforms.ExtractKey.field":"id"
   }
 }

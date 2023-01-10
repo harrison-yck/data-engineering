@@ -14,6 +14,7 @@ class MovieStatus(enum.Enum):
 
 @dataclass(frozen=True)
 class Movie:
+    id: str
     name: str
     status: MovieStatus
     duration: time
