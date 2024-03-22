@@ -17,7 +17,6 @@ which allows users to search movies and subscribe for updates.
 
 ## Architecture ##
 
-![](graph/arch.png)
 
 ## How To Use
 

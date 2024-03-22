@@ -1,8 +1,10 @@
 import datetime as dt
 from unittest.mock import patch
 
-from airflow.modules.cineplex.cineplex_executor import CineplexExecutor
-from airflow.modules.tests.test_tool import read_file_as_json
+from internal.dag.dag_config import Config
+from internal.modules.cineplex.cineplex_executor import CineplexExecutor
+from internal.modules.cineplex.cineplex_producer import CineplexProducer
+from internal.modules.tests.test_tool import read_file_as_json
 from common import Movie, MovieStatus, Cinema
 
 
@@ -14,7 +16,7 @@ def test_duration():
 
 @patch("airflow.modules.cineplex.cineplex_executor.CineplexProducer")
 def test_to_movies(self):
-    executor = CineplexExecutor()
+    executor = CineplexExecutor(Config.CINEMA_API[Cinema.CINEPLEX], CineplexProducer(Config.KAFKA_SERVERS))
     result = list(executor.to_movies(read_file_as_json("test_data/cineplex_api.txt")))
 
     expected = Movie(

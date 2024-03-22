@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 
-from airflow.modules.db.movie import movies
-from airflow.tool.redis_client import RedisClient
+from internal.modules.db.movie import movies
+from internal.tool.redis_client import RedisClient
 
 
 class CinemaDAO:

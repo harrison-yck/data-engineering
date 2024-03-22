@@ -3,17 +3,13 @@ import json
 import datetime as dt
 import uuid
 
-from airflow.dag.dag_config import Config
-from airflow.modules.cineplex.cineplex_producer import CineplexProducer
-from airflow.modules.cineplex.cineplex_scraper import CineplexScraper
-
 from common import KafkaTopic, Cinema, Movie, MovieStatus
 
 
 class CineplexExecutor:
-    def __init__(self):
-        self.scraper = CineplexScraper(Config.CINEMA_API[Cinema.CINEPLEX])
-        self.producer = CineplexProducer(Config.KAFKA_SERVERS)
+    def __init__(self, scraper, producer):
+        self.scraper = scraper
+        self.producer = producer
 
     def execute(self):
         response = self.scraper.get_text(0, 500)
@@ -44,7 +40,7 @@ class CineplexExecutor:
 
         rating = movie_rating['ratingTitle']
 
-        if rating is 'N/A':
+        if rating == 'N/A':
             return None
         else:
             return rating
@@ -60,7 +56,7 @@ class CineplexExecutor:
 
     @staticmethod
     def duration(s):
-        if s is "":
+        if s == "":
             return None
 
         return dt.datetime.strptime(s, '%Hh %Mm').time()

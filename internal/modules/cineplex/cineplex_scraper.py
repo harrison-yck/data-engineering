@@ -2,7 +2,7 @@ import logging
 from contextlib import closing
 from requests import get
 
-from airflow.tool import Retry
+from internal.tool import Retry
 
 
 class CineplexScraper:
