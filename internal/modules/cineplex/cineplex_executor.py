@@ -4,6 +4,7 @@ import datetime as dt
 import uuid
 
 from common import KafkaTopic, Cinema, Movie, MovieStatus
+from internal.modules.db.cinema_dao import CinemaDAO
 
 
 class CineplexExecutor:
@@ -16,7 +17,10 @@ class CineplexExecutor:
         response_json = json.loads(response)
 
         for movie in self.to_movies(response_json):
-            self.producer.publish(KafkaTopic.movie_update, movie)
+            status = CinemaDAO.get_movie_status(Cinema.CINEPLEX, movie.name)
+
+            if status is None or status != movie.status:
+                self.producer.publish(KafkaTopic.movie_update, movie)
 
     def to_movies(self, json_string):
         for movie in json_string['data']:
@@ -25,6 +29,7 @@ class CineplexExecutor:
     def to_movie(self, entry):
         return Movie(
             str(uuid.uuid4()),
+            entry['id'],
             entry['name'],
             self.movie_status(entry['isComingSoon'], entry['isNowPlaying']),
             self.duration(entry['duration']),

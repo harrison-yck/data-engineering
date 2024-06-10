@@ -1,6 +1,6 @@
 <h1 align="center">Data Engineering</h1>
 
-<p align="center">A project to learn data architecture</p>
+<p align="center">CinePlex Tracker</p>
 
 ## Introduction
 
@@ -10,19 +10,17 @@ which allows users to search movies and subscribe for updates.
 
 
 ## API:
+Query Movie: GET /movies/query <br />
+Get Movie: GET /movies/{movie_id} <br />
+Subscribe movie updates: POST /movies/{movie_id}/subs
 
-
-
-## Design
+## Schema
+![](graph/schema.png)
 
 ## Architecture ##
 
+![](graph/arch.png)
 
-## How To Use
-
-## Ref
-
-Kafka: https://hub.docker.com/r/bitnami/kafka
 
 ## Author
 - [@harrison](https://github.com/harrison-yck)
